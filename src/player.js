@@ -15,6 +15,11 @@ module.exports = exports = Player;
 function Player(position, canvas) {
   this.worldWidth = canvas.width;
   this.worldHeight = canvas.height;
+  this.level = 1;
+  this.lives = 10;
+  this.width = 10;
+  this.height =10;
+  this.score = 0;
   this.state = "idle";
   this.position = {
     x: position.x,
@@ -29,9 +34,11 @@ function Player(position, canvas) {
   this.thrusting = false;
   this.steerLeft = false;
   this.steerRight = false;
+  this.shooting = false;
 
   var self = this;
   window.onkeydown = function(event) {
+
     switch(event.key) {
       case 'ArrowUp': // up
       case 'w':
@@ -44,6 +51,15 @@ function Player(position, canvas) {
       case 'ArrowRight': // right
       case 'd':
         self.steerRight = true;
+        break;
+      case 'Enter':
+        self.shooting = true;
+        break;
+      case 'r':
+        self.position = {
+          x: (Math.random()*self.worldWidth),
+          y: (Math.random()*self.worldHeight)
+        };
         break;
     }
   }
@@ -62,12 +78,17 @@ function Player(position, canvas) {
       case 'd':
         self.steerRight = false;
         break;
+      case 'Enter':
+        self.shooting = false;
+        break;
     }
   }
 }
 
 
-
+Player.prototype.shoot = function () {
+  return this.shooting;
+};
 /**
  * @function updates the player object
  * {DOMHighResTimeStamp} time the elapsed time since the last frame
@@ -86,8 +107,8 @@ Player.prototype.update = function(time) {
       x: Math.sin(this.angle),
       y: Math.cos(this.angle)
     }
-    this.velocity.x -= acceleration.x;
-    this.velocity.y -= acceleration.y;
+    this.velocity.x -= acceleration.x/8;
+    this.velocity.y -= acceleration.y/8;
   }
   // Apply velocity
   this.position.x += this.velocity.x;
